@@ -15,17 +15,20 @@ namespace TGUI.CoreLib.Utils
         private static readonly Regex commandParserReg2 = new Regex(@"^(/\w*) (.*)$");
         public static bool TryParseCommand(string text, out (string command, string content) result)
         {
-            Match match1 = commandParserReg1.Match(text);
-            Match match2 = commandParserReg2.Match(text);
-            if (match1.Success)
+            if (text != null)
             {
-                result = (match1.Groups[1].Value, string.Empty);
-                return true;
-            }
-            else if (match2.Success)
-            {
-                result = (match2.Groups[1].Value, match2.Groups[2].Value);
-                return true;
+                Match match1 = commandParserReg1.Match(text);
+                Match match2 = commandParserReg2.Match(text);
+                if (match1.Success)
+                {
+                    result = (match1.Groups[1].Value, string.Empty);
+                    return true;
+                }
+                else if (match2.Success)
+                {
+                    result = (match2.Groups[1].Value, match2.Groups[2].Value);
+                    return true;
+                }
             }
             result = (string.Empty, string.Empty);
             return false;

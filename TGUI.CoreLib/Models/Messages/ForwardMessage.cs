@@ -7,16 +7,13 @@ using TGUI.CoreLib.Interfaces;
 
 namespace TGUI.CoreLib.Models.Messages
 {
-    public class TextMessage : ISendedItem
+    public class ForwardMessage : TextMessage
     {
-        public long TargetChatId { get; init; }
-        public string Text { get; init; }
-        public ITelegramBotClient botClient { get; init; }
-        public IDataLogger dataLogger { get; init; }
-        public Func<Message, Task> PostSendingAction { get; init; }
-        public virtual async Task<Message> Send()
+        public long SourceChatId { get; init; }
+        public int SourceMessageId { get; init; }
+        public override async Task<Message> Send()
         {
-            var message = await botClient?.SendTextMessageAsync(TargetChatId, Text, Telegram.Bot.Types.Enums.ParseMode.Html);
+            var message = await botClient?.ForwardMessageAsync(TargetChatId, SourceChatId, SourceMessageId);
             if (message != null)
             {
                 if (PostSendingAction != null)
@@ -25,6 +22,9 @@ namespace TGUI.CoreLib.Models.Messages
                 }
                 await dataLogger?.Log(message);
             }
+            await Task.Delay(2000);
+            await base.Send();
+
             return message;
         }
     }

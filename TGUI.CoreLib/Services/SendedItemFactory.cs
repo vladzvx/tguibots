@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -24,17 +25,64 @@ namespace TGUI.CoreLib.Services
             {
                 appendix = string.Format("\n\n#id{0}\n<a href =\"tg://user?id={0}\">{1}</a>", message.From.Id, message.From.FirstName ?? string.Empty);
             }
-            string text = (message.Text ?? message.Caption ?? string.Empty) + appendix;
+            string text; 
 
-            text = SupportFunctions.TextFormatingRecovering(message.Entities, text);
-            TextMessage mess = new TextMessage()
+            TextMessage mess;
+            if (message.ForwardFrom != null || message.ForwardSenderName != null || message.ForwardFromChat != null || message.ForwardDate != null)
             {
-                botClient = botClient,
-                dataLogger = dataLogger,
-                TargetChatId = targetChat,
-                Text = text,
-                PostSendingAction = PostSendingAction
-            };
+                mess = new ForwardMessage()
+                {
+                    SourceChatId=message.Chat.Id,
+                    SourceMessageId=message.MessageId,
+                    botClient = botClient,
+                    dataLogger = dataLogger,
+                    TargetChatId = targetChat,
+                    Text = "⬆️"+ appendix,
+                    PostSendingAction = PostSendingAction
+                };
+            }
+            else if (message.Photo != null && message.Photo.Length>0)
+            {
+                text = (message.Caption ?? string.Empty) + appendix;
+                text = SupportFunctions.TextFormatingRecovering(message.CaptionEntities, text);
+                mess = new PhotoMessage()
+                {
+                    botClient = botClient,
+                    dataLogger = dataLogger,
+                    TargetChatId = targetChat,
+                    Text = text,
+                    PostSendingAction = PostSendingAction,
+                    FileId = message.Photo.Last().FileId
+                };
+            }
+            else if (message.Video != null)
+            {
+                text = (message.Caption ?? string.Empty) + appendix;
+                text = SupportFunctions.TextFormatingRecovering(message.CaptionEntities, text);
+                mess = new VideoMessage()
+                {
+                    botClient = botClient,
+                    dataLogger = dataLogger,
+                    TargetChatId = targetChat,
+                    Text = text,
+                    PostSendingAction = PostSendingAction,
+                    FileId = message.Video.FileId
+                };
+            }
+
+            else
+            {
+                text = (message.Text ?? string.Empty) + appendix;
+                text = SupportFunctions.TextFormatingRecovering(message.Entities, text);
+                mess = new TextMessage()
+                {
+                    botClient = botClient,
+                    dataLogger = dataLogger,
+                    TargetChatId = targetChat,
+                    Text = text,
+                    PostSendingAction = PostSendingAction
+                };
+            }
             return mess;
         }
     }

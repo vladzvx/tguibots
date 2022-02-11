@@ -3,20 +3,18 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InputFiles;
 using TGUI.CoreLib.Interfaces;
 
 namespace TGUI.CoreLib.Models.Messages
 {
-    public class TextMessage : ISendedItem
+    public class VideoMessage : TextMessage
     {
-        public long TargetChatId { get; init; }
-        public string Text { get; init; }
-        public ITelegramBotClient botClient { get; init; }
-        public IDataLogger dataLogger { get; init; }
-        public Func<Message, Task> PostSendingAction { get; init; }
-        public virtual async Task<Message> Send()
+        public string FileId { get; init; }
+        public override async Task<Message> Send()
         {
-            var message = await botClient?.SendTextMessageAsync(TargetChatId, Text, Telegram.Bot.Types.Enums.ParseMode.Html);
+            var message = await botClient?.SendVideoAsync(TargetChatId, new InputOnlineFile(FileId), caption:Text, parseMode: ParseMode.Html);
             if (message != null)
             {
                 if (PostSendingAction != null)

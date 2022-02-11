@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  feedbackbot:
+    image: ${DOCKER_REGISTRY}feedbackbot
+    restart: always
+    container_name: FeedbackBot
+    build:
+      context: .
+      dockerfile: FeedbackBot/Dockerfile
+    environment:
+      MONGO_DB_CNNSTR: "mongodb://${MONGO_DB_USER}:${MONGO_DB_PWD}@${MONGO_DB_HOST}:${MONGO_DB_INTERNAL_PORT}"
+      TOKEN: "${TOKEN}"
+
+
+  mongo:
+    container_name: MongoDB
+    hostname: ${MONGO_DB_HOST}
+    image: mongo
+    restart: always
+    ports:
+      - ${MONGO_DB_EXTERNAL_PORT}:${MONGO_DB_INTERNAL_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PWD}

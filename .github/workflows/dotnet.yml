@@ -33,6 +33,7 @@ jobs:
           push: true
           tags: vladzvx/tgui:feedback
   deploy:
+    needs: [build]
     runs-on: ubuntu-18.04
     steps:
     - name: Cloning repo

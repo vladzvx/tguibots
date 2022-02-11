@@ -74,7 +74,6 @@ namespace TGUI.CoreLib.Services
                                     TGUI.CoreLib.Models.User user = new TGUI.CoreLib.Models.User() { Id = update.Message.From.Id, Name = update.Message.From.FirstName, Username = update.Message.From.Username };
                                     await messagesLogger.Log(user, item => item.Id == user.Id);
                                 }
-
                                 if (update.Message.Chat.Type == Telegram.Bot.Types.Enums.ChatType.Private)
                                 {
                                     await ProcessPrivateMessage(update.Message);

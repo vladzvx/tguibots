@@ -77,7 +77,7 @@ namespace FeedbackBot.Services
                     }
                 }
             }
-            else if (message.ReplyToMessage != null)
+            else if (message.ReplyToMessage != null && message.ReplyToMessage.From.Id==this.Id)
             {
                 List<Link> links = await messagesLogger.GetData<Link>((item) => item.InternalChatId == message.ReplyToMessage.Chat.Id && item.InternalMessageId == message.ReplyToMessage.MessageId);
                 if (links.Count == 1)

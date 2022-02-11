@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TGUI.CoreLib.Enums
+﻿namespace TGUI.CoreLib.Enums
 {
     public enum UserStatus
     {

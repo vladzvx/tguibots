@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TGUI.CoreLib.Interfaces;
+﻿using TGUI.CoreLib.Interfaces;
 
 namespace TGUI.CoreLib.Services
 {

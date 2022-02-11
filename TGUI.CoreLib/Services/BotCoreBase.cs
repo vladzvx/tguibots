@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -23,8 +20,11 @@ namespace TGUI.CoreLib.Services
             {
                 Id = botClient.BotId.Value;
             }
-            else throw new ApplicationException("Bot id is null!");
-            
+            else
+            {
+                throw new ApplicationException("Bot id is null!");
+            }
+
             this.messagesSender = messagesSender;
             this.messagesLogger = messagesLogger;
             this.sendedItemFactory = sendedItemFactory;

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -20,7 +17,7 @@ namespace TGUI.CoreLib.Services
             this.dataLogger = dataLogger;
             this.botClient = botClient;
         }
-        public ISendedItem ReCreateMessage(Message message,long targetChat, bool addAutor, Func<Message, Task> PostSendingAction)
+        public ISendedItem ReCreateMessage(Message message, long targetChat, bool addAutor, Func<Message, Task> PostSendingAction)
         {
             string appendix = string.Empty;
             if (addAutor && message.From != null)
@@ -36,7 +33,7 @@ namespace TGUI.CoreLib.Services
                 dataLogger = dataLogger,
                 TargetChatId = targetChat,
                 Text = text,
-                PostSendingAction= PostSendingAction
+                PostSendingAction = PostSendingAction
             };
             return mess;
         }

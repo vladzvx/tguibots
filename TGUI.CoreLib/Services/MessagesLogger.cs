@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using Telegram.Bot.Types;
 using TGUI.CoreLib.Interfaces;
 
 namespace TGUI.CoreLib.Services
@@ -18,12 +16,17 @@ namespace TGUI.CoreLib.Services
             this.mongoDatabase = mongoDatabase;
         }
 
-        public async Task Log<TData>(TData data, Expression<Func<TData, bool>> filter=null)
+        public async Task Log<TData>(TData data, Expression<Func<TData, bool>> filter = null)
         {
             var collection = mongoDatabase.GetCollection<TData>(GetCollectionName<TData>());
             if (filter == null)
+            {
                 await collection.InsertOneAsync(data);
-            else await collection.ReplaceOneAsync(filter, data, replaceOptions);
+            }
+            else
+            {
+                await collection.ReplaceOneAsync(filter, data, replaceOptions);
+            }
         }
 
         public async Task<List<TData>> GetData<TData>(Expression<Func<TData, bool>> filter)

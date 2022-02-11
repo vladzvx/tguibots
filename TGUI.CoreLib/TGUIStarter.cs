@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Telegram.Bot;
 using TGUI.CoreLib.Interfaces;
 using TGUI.CoreLib.Services;
@@ -22,7 +20,11 @@ namespace TGUI.CoreLib
                 var db = mongo.GetDatabase(client.BotId.Value.ToString());
                 services.AddSingleton<IMongoDatabase>(db);
             }
-            else throw new ApplicationException("Bot client creation failed!");
+            else
+            {
+                throw new ApplicationException("Bot client creation failed!");
+            }
+
             services.AddSingleton<ITelegramBotClient>(client);
             services.AddSingleton(mongo);
             //services.AddSingleton<IBotCore, BotCoreBase>();

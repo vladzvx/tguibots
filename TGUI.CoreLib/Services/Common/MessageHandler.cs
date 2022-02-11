@@ -10,10 +10,10 @@ namespace TGUI.CoreLib.Services
 {
     public class MessageHandler : IUpdateHandler
     {
-        public static IBotCore updatesProcessor; 
+        public static IBotCore updatesProcessor;
         public async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            
+
         }
 
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)

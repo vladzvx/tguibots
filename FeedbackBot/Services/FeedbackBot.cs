@@ -1,5 +1,4 @@
 ﻿using FeedbackBot.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,41 +15,41 @@ namespace FeedbackBot.Services
         public Profile Profile;
         public FeedbackBotCore(IMessagesSender messagesSender, IDataLogger messagesLogger, ITelegramBotClient botClient, ISendedItemFactory sendedItemFactory) : base(messagesSender, messagesLogger, botClient, sendedItemFactory)
         {
-            var profiles = messagesLogger.GetData<Profile>(item => item.BotId==this.Id).Result;
+            var profiles = messagesLogger.GetData<Profile>(item => item.BotId == this.Id).Result;
             if (profiles != null && profiles.Count > 0)
             {
                 long maxTime = profiles.Max(item => item.Timestamp.Ticks);
-                Profile = profiles.Find(item => item.Timestamp.Ticks==maxTime);
+                Profile = profiles.Find(item => item.Timestamp.Ticks == maxTime);
             }
             else
             {
                 Profile = new Profile()
                 {
                     BotId = this.Id,
-                
+
                 };
             }
         }
 
         public override async Task ProcessPrivateMessage(Message message)
         {
-            if (SupportFunctions.TryParseCommand(message.Text,out var res))
+            if (SupportFunctions.TryParseCommand(message.Text, out var res))
             {
-               
+
             }
             else
             {
-                var mess = sendedItemFactory.ReCreateMessage(message, Profile.TargetChat, true,async (mess)=> 
-                {
-                    Link link = new Link()
-                    {
-                        ExternalChatId=message.Chat.Id,
-                        ExternalMessageId = message.MessageId,
-                        InternalChatId=mess.Chat.Id,
-                        InternalMessageId=mess.MessageId
-                    };
-                    await messagesLogger.Log(link);
-                });
+                var mess = sendedItemFactory.ReCreateMessage(message, Profile.TargetChat, true, async (mess) =>
+                 {
+                     Link link = new Link()
+                     {
+                         ExternalChatId = message.Chat.Id,
+                         ExternalMessageId = message.MessageId,
+                         InternalChatId = mess.Chat.Id,
+                         InternalMessageId = mess.MessageId
+                     };
+                     await messagesLogger.Log(link);
+                 });
                 messagesSender.AddItem(mess);
             }
         }
@@ -79,7 +78,7 @@ namespace FeedbackBot.Services
                     }
                 }
             }
-            else if (message.ReplyToMessage!=null)
+            else if (message.ReplyToMessage != null)
             {
                 List<Link> links = await messagesLogger.GetData<Link>((item) => item.InternalChatId == message.ReplyToMessage.Chat.Id && item.InternalMessageId == message.ReplyToMessage.MessageId);
                 if (links.Count == 1)

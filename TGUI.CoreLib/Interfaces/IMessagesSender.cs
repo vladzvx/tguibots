@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TGUI.CoreLib.Interfaces
+﻿namespace TGUI.CoreLib.Interfaces
 {
     public interface IMessagesSender
     {

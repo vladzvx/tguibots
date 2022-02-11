@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
-using TGUI.CoreLib.Interfaces;
 using TGUI.CoreLib.Services.Common;
 
 namespace TGUI.CoreLib.Utils
@@ -37,7 +33,11 @@ namespace TGUI.CoreLib.Utils
 
         public static string TextFormatingRecovering(MessageEntity[] Entities, string text)
         {
-            if (Entities == null || text == null) return text;
+            if (Entities == null || text == null)
+            {
+                return text;
+            }
+
             int offset = 0;
             Array.Sort(Entities, new EntityComparer());//TODO удостовериться, что они всегда сортированные
             foreach (MessageEntity entity in Entities)
@@ -100,7 +100,10 @@ namespace TGUI.CoreLib.Utils
                 newText += startText[iter];
             }
             if (entity.Offset + entity.Length + offset == startText.Length)
+            {
                 newText += EndSymbols;
+            }
+
             offset += StartSymbols.Length;
             offset += EndSymbols.Length;
             return newText;

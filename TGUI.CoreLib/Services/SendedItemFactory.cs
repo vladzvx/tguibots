@@ -18,72 +18,79 @@ namespace TGUI.CoreLib.Services
             this.dataLogger = dataLogger;
             this.botClient = botClient;
         }
-        public ISendedItem ReCreateMessage(Message message, long targetChat, bool addAutor, Func<Message, Task> PostSendingAction)
+        private static string CreateAppendix(Message message, bool addAutor)
         {
-            string appendix = string.Empty;
-            if (addAutor && message.From != null)
-            {
-                appendix = string.Format("\n\n#id{0}\n<a href =\"tg://user?id={0}\">{1}</a>", message.From.Id, message.From.FirstName ?? string.Empty);
-            }
-            string text; 
+            return message.From != null && addAutor ? string.Format("\n\n#id{0}\n<a href =\"tg://user?id={0}\">{1}</a>", message.From.Id, message.From.FirstName ?? string.Empty) : string.Empty;
+        }
+        private static string ExtractText(Message message, bool addAutor)
+        {
+            string text;
+            string appendix = CreateAppendix(message, addAutor);
 
-            TextMessage mess;
             if (message.ForwardFrom != null || message.ForwardSenderName != null || message.ForwardFromChat != null || message.ForwardDate != null)
             {
-                mess = new ForwardMessage()
-                {
-                    SourceChatId=message.Chat.Id,
-                    SourceMessageId=message.MessageId,
-                    botClient = botClient,
-                    dataLogger = dataLogger,
-                    TargetChatId = targetChat,
-                    Text = "⬆️"+ appendix,
-                    PostSendingAction = PostSendingAction
-                };
+                text = "⬆️" + appendix;
             }
-            else if (message.Photo != null && message.Photo.Length>0)
+            else if (!string.IsNullOrEmpty(message.Text))
             {
-                text = (message.Caption ?? string.Empty) + appendix;
-                text = SupportFunctions.TextFormatingRecovering(message.CaptionEntities, text);
-                mess = new PhotoMessage()
-                {
-                    botClient = botClient,
-                    dataLogger = dataLogger,
-                    TargetChatId = targetChat,
-                    Text = text,
-                    PostSendingAction = PostSendingAction,
-                    FileId = message.Photo.Last().FileId
-                };
+                text = SupportFunctions.TextFormatingRecovering(message.Entities, (message.Text ?? string.Empty) + appendix);
             }
-            else if (message.Video != null)
+            else if (!string.IsNullOrEmpty(message.Caption))
             {
-                text = (message.Caption ?? string.Empty) + appendix;
-                text = SupportFunctions.TextFormatingRecovering(message.CaptionEntities, text);
-                mess = new VideoMessage()
-                {
-                    botClient = botClient,
-                    dataLogger = dataLogger,
-                    TargetChatId = targetChat,
-                    Text = text,
-                    PostSendingAction = PostSendingAction,
-                    FileId = message.Video.FileId
-                };
+                text = SupportFunctions.TextFormatingRecovering(message.CaptionEntities, (message.Caption ?? string.Empty) + appendix);
             }
-
             else
             {
-                text = (message.Text ?? string.Empty) + appendix;
-                text = SupportFunctions.TextFormatingRecovering(message.Entities, text);
-                mess = new TextMessage()
-                {
-                    botClient = botClient,
-                    dataLogger = dataLogger,
-                    TargetChatId = targetChat,
-                    Text = text,
-                    PostSendingAction = PostSendingAction
-                };
+                text = string.Empty;
             }
-            return mess;
+
+            return text;
+        }
+        private TMessage CreateNew<TMessage>(long targetChatId, string text, Func<Message, Task> postSendingAction, Action<TMessage> additionaAction = null) where TMessage : TextMessage, new()
+        {
+            TMessage res = new TMessage()
+            {
+                botClient = botClient,
+                dataLogger = dataLogger,
+                TargetChatId = targetChatId,
+                Text = text,
+                PostSendingAction = postSendingAction
+            };
+            if (additionaAction != null)
+            {
+                additionaAction(res);
+            }
+
+            return res;
+        }
+        public ISendedItem ReCreateMessage(Message message, long targetChat, bool addAutor, Func<Message, Task> PostSendingAction)
+        {
+            ISendedItem resultMessage;
+            string text = ExtractText(message, addAutor);
+            if (message.ForwardFrom != null || message.ForwardSenderName != null || message.ForwardFromChat != null || message.ForwardDate != null)
+            {
+                resultMessage = CreateNew<ForwardMessage>(targetChat, text, PostSendingAction, item =>
+                {
+                    item.SourceChatId = message.Chat.Id;
+                    item.SourceMessageId = message.MessageId;
+                });
+            }
+            else
+            {
+                if (message.Photo != null && message.Photo.Length > 0)
+                {
+                    resultMessage = CreateNew<PhotoMessage>(targetChat, text, PostSendingAction, item => item.FileId = message.Photo.Last().FileId);
+                }
+                else if (message.Video != null)
+                {
+                    resultMessage = CreateNew<VideoMessage>(targetChat, text, PostSendingAction, item => item.FileId = message.Video.FileId);
+                }
+                else
+                {
+                    resultMessage = CreateNew<TextMessage>(targetChat, text, PostSendingAction);
+                }
+            }
+            return resultMessage;
         }
     }
 }

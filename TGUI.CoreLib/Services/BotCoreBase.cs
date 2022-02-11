@@ -98,7 +98,7 @@ namespace TGUI.CoreLib.Services
                         }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

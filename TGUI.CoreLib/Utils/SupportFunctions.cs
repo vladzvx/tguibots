@@ -33,7 +33,6 @@ namespace TGUI.CoreLib.Utils
             result = (string.Empty, string.Empty);
             return false;
         }
-
         public static string TextFormatingRecovering(MessageEntity[] Entities, string text)
         {
             if (Entities == null || text == null)
@@ -86,7 +85,6 @@ namespace TGUI.CoreLib.Utils
             }
             return text;
         }
-
         private static string ApplyFormat(MessageEntity entity, string StartSymbols, string EndSymbols, string startText, ref int offset)
         {
             string newText = string.Empty;

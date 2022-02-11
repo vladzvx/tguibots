@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -16,7 +15,7 @@ namespace TGUI.CoreLib.Models.Messages
         public Func<Message, Task> PostSendingAction { get; init; }
         public virtual async Task<Message> Send()
         {
-            var message = await botClient?.SendTextMessageAsync(TargetChatId, Text, Telegram.Bot.Types.Enums.ParseMode.Html);
+            Message message = await botClient?.SendTextMessageAsync(TargetChatId, Text, Telegram.Bot.Types.Enums.ParseMode.Html);
             if (message != null)
             {
                 if (PostSendingAction != null)

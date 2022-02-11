@@ -13,11 +13,11 @@ namespace TGUI.CoreLib
         {
             string botToken = Environment.GetEnvironmentVariable("TOKEN");
             string mongoCNNSTR = Environment.GetEnvironmentVariable("MONGO_DB_CNNSTR");
-            var client = new TelegramBotClient(botToken);
-            var mongo = new MongoClient(mongoCNNSTR);
+            TelegramBotClient client = new TelegramBotClient(botToken);
+            MongoClient mongo = new MongoClient(mongoCNNSTR);
             if (client.BotId.HasValue)
             {
-                var db = mongo.GetDatabase(client.BotId.Value.ToString());
+                IMongoDatabase db = mongo.GetDatabase(client.BotId.Value.ToString());
                 services.AddSingleton<IMongoDatabase>(db);
             }
             else

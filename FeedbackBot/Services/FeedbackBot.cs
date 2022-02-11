@@ -15,7 +15,7 @@ namespace FeedbackBot.Services
         public Profile Profile;
         public FeedbackBotCore(IMessagesSender messagesSender, IDataLogger messagesLogger, ITelegramBotClient botClient, ISendedItemFactory sendedItemFactory) : base(messagesSender, messagesLogger, botClient, sendedItemFactory)
         {
-            var profiles = messagesLogger.GetData<Profile>(item => item.BotId == this.Id).Result;
+            List<Profile> profiles = messagesLogger.GetData<Profile>(item => item.BotId == this.Id).Result;
             if (profiles != null && profiles.Count > 0)
             {
                 long maxTime = profiles.Max(item => item.Timestamp.Ticks);
@@ -26,20 +26,19 @@ namespace FeedbackBot.Services
                 Profile = new Profile()
                 {
                     BotId = this.Id,
-
                 };
             }
         }
 
         public override async Task ProcessPrivateMessage(Message message)
         {
-            if (SupportFunctions.TryParseCommand(message.Text, out var res))
+            if (SupportFunctions.TryParseCommand(message.Text, out (string command, string content) res))
             {
 
             }
             else
             {
-                var mess = sendedItemFactory.ReCreateMessage(message, Profile.TargetChat, true, async (mess) =>
+                ISendedItem mess = sendedItemFactory.ReCreateMessage(message, Profile.TargetChat, true, async (mess) =>
                  {
                      Link link = new Link()
                      {
@@ -56,7 +55,7 @@ namespace FeedbackBot.Services
 
         public override async Task ProcessGroupMessage(Message message)
         {
-            if (SupportFunctions.TryParseCommand(message.Text, out var res))
+            if (SupportFunctions.TryParseCommand(message.Text, out (string command, string content) res))
             {
                 if (res.command != null)
                 {
@@ -83,7 +82,7 @@ namespace FeedbackBot.Services
                 List<Link> links = await messagesLogger.GetData<Link>((item) => item.InternalChatId == message.ReplyToMessage.Chat.Id && item.InternalMessageId == message.ReplyToMessage.MessageId);
                 if (links.Count == 1)
                 {
-                    var mess = sendedItemFactory.ReCreateMessage(message, links[0].ExternalChatId, false, async (mess) =>
+                    ISendedItem mess = sendedItemFactory.ReCreateMessage(message, links[0].ExternalChatId, false, async (mess) =>
                     {
                         Link link = new Link()
                         {

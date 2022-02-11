@@ -18,7 +18,7 @@ namespace TGUI.CoreLib.Services
 
         public async Task Log<TData>(TData data, Expression<Func<TData, bool>> filter = null)
         {
-            var collection = mongoDatabase.GetCollection<TData>(GetCollectionName<TData>());
+            IMongoCollection<TData> collection = mongoDatabase.GetCollection<TData>(GetCollectionName<TData>());
             if (filter == null)
             {
                 await collection.InsertOneAsync(data);
@@ -31,8 +31,8 @@ namespace TGUI.CoreLib.Services
 
         public async Task<List<TData>> GetData<TData>(Expression<Func<TData, bool>> filter)
         {
-            var collection = mongoDatabase.GetCollection<TData>(GetCollectionName<TData>());
-            var result = await collection.FindAsync(Builders<TData>.Filter.Where(filter));
+            IMongoCollection<TData> collection = mongoDatabase.GetCollection<TData>(GetCollectionName<TData>());
+            IAsyncCursor<TData> result = await collection.FindAsync(Builders<TData>.Filter.Where(filter));
             return await result.ToListAsync();
         }
 

@@ -3,7 +3,6 @@ name: Feedback bot deploy
 on:
   push:
     branches: [ main ]
-      
 env:
   IMAGE_NAME: feedback-bot
   

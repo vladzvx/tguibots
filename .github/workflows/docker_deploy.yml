@@ -41,7 +41,7 @@ jobs:
       with:
         host: ${{ secrets.MAIN_HOST }}
         username: ${{ secrets.MAIN_USERNAME }}
-        password: : ${{ secrets.MAIN_PWD }}
+        password: ${{secrets.MAIN_PWD }}
         port: ${{ secrets.MAIN_PORT }}
         script: |
           sudo docker login -u ${{ secrets.DOCKER_HUB_LOGIN }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
